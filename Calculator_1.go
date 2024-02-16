@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
+	"strings"
 )
 
 func checkRoman(input string) bool {
@@ -55,7 +58,7 @@ func romanToInt(roman string) int {
 	return result
 }
 
-func intToRoman(num int) string {
+/*func intToRoman(num int) string {
 	// Создаем словарь соответствия арабских чисел и римских цифр
 	romanNumerals := map[int]string{
 		1000: "M",
@@ -87,15 +90,44 @@ func intToRoman(num int) string {
 	}
 
 	return roman
+} */
+
+func intToRoman(num int) string {
+	arabicNumbers := []int{1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1}
+	romanNumerals := []string{"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"}
+
+	roman := ""
+
+	for i := 0; i < len(arabicNumbers); i++ {
+		for num >= arabicNumbers[i] {
+			roman += romanNumerals[i]
+			num -= arabicNumbers[i]
+		}
+	}
+
+	return roman
 }
 
 func main() {
 
-	var chis1, arf, chis2 string
+	var stroka, chis1, arf, chis2 string
+
 	fmt.Println("Введите ваш пример")
-	fmt.Scanln(&chis1, &arf, &chis2)
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	stroka = scanner.Text()
 	fmt.Println()
-	fmt.Println(chis1, arf, chis2)
+	fmt.Println(stroka)
+
+	number := strings.Split(stroka, " ")
+
+	if len(number) != 3 {
+		panic("Формат введенных данных не соответствует изначально заявленным")
+	}
+
+	chis1 = number[0]
+	arf = number[1]
+	chis2 = number[2]
 
 	isRoman := checkRoman(chis1)
 	isArabic := checkArabic(chis1)
@@ -105,13 +137,17 @@ func main() {
 	} else if !isRoman && isArabic {
 		fmt.Println("Введено арабское число")
 	} else {
-		fmt.Println("Некорректное число")
+		panic("Некорректное число")
 	}
 
 	if isArabic == true {
 
 		a1, _ := strconv.Atoi(chis1)
 		b1, _ := strconv.Atoi(chis2)
+
+		if !(1 <= a1 && a1 <= 10) || !(1 <= b1 && b1 <= 10) {
+			panic("Значения вводимых чисел не соответствуют заявленным границам")
+		}
 
 		switch arf {
 		case "+":
@@ -129,22 +165,30 @@ func main() {
 		a1 := romanToInt(chis1)
 		b1 := romanToInt(chis2)
 
+		if !(1 <= a1 && a1 <= 10) || !(1 <= b1 && b1 <= 10) {
+			panic("Значения вводимых чисел не соответствуют заявленным границам")
+		}
+
 		switch arf {
 		case "+":
 			fmt.Println(intToRoman(a1 + b1))
+			//fmt.Println(a1 + b1)
 		case "-":
 			if a1 < b1 {
-				fmt.Println("Ошибка")
+				panic("Первое число меньше второго")
 			} else {
 				fmt.Println(intToRoman(a1 - b1))
+				//fmt.Println(a1 - b1)
 			}
 		case "*":
 			fmt.Println(intToRoman(a1 * b1))
+			//fmt.Println(a1 * b1)
 		case "/":
 			if a1 < b1 || a1%b1 != 0 {
-				fmt.Println("Ошибка")
+				panic("Первое число меньше второго или вы хотите поделить с остатком")
 			} else {
 				fmt.Println(intToRoman(a1 / b1))
+				//fmt.Println(a1 - b1)
 			}
 
 		}
